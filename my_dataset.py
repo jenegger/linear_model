@@ -2,6 +2,8 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+import torch.nn as nn
+import torch.optim as optim
 from data_shaping import create_data
 from my_first_model import TinyModel
 
@@ -60,9 +62,11 @@ def dynamic_length_collate(batch):
 	for in_data,in_target in batch:
 		pad_comb = nr_comb - in_data.shape[0]
 		pad_hits = nr_max_hits - in_data.shape[1]
-		zeros_array = np.zeros((in_data.shape[0],pad_hits, 5))
+		#zeros_array = np.zeros((in_data.shape[0],pad_hits, 5))
+		zeros_array = np.zeros((in_data.shape[0],pad_hits, 4))
 		result_data = np.concatenate((in_data, zeros_array), axis=1)
-		zeros_array_comb = np.zeros((pad_comb,nr_max_hits,5))
+		#zeros_array_comb = np.zeros((pad_comb,nr_max_hits,5))
+		zeros_array_comb = np.zeros((pad_comb,nr_max_hits,4))
 		result_data = np.concatenate((result_data,zeros_array_comb), axis =0)
 		zeros_target = np.zeros(pad_comb)
 		np_in_target = np.array(in_target)
@@ -73,7 +77,12 @@ def dynamic_length_collate(batch):
 	#return out_data, out_target
 	np_out_data = np.array(out_data)
 	np_out_target = np.array(out_target)
-	return torch.from_numpy(np_out_data), torch.from_numpy(np_out_target)
+	t_out_data = torch.from_numpy(np_out_data)
+	t_out_target = torch.from_numpy(np_out_target)
+	t_out_data = t_out_data.float()
+	t_out_target = t_out_target.float()
+	#return torch.from_numpy(np_out_data), torch.from_numpy(np_out_target)
+	return t_out_data,t_out_target
 dloader = DataLoader(dataset,batch_size=8,shuffle=False,collate_fn=dynamic_length_collate)
 for batch in dloader:
 	print("hello")
@@ -84,6 +93,24 @@ for batch in dloader:
 	print(batch[0].size())
 	print(batch[1].size())
 	pred = TinyModel() 
+
+
+# Train the model
+dtype = torch.float32
+my_model = TinyModel()
+n_epochs = 200
+loss_fn = nn.BCELoss()
+optimizer = optim.SGD(my_model.parameters(), lr=0.1)
+my_model.train()
+for epoch in range(n_epochs):
+    for X_batch, target in dloader:
+        y_pred = my_model(X_batch)
+        print("this is the shape of y_pred: ",y_pred.shape)
+        print("this is the shape of target:", target.shape)
+        loss = loss_fn(y_pred, target)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
 #	max_len = max(len(item) for item in batch)
 #	for  item in batch:

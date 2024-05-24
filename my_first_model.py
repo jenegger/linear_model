@@ -4,7 +4,7 @@ import torch
 class TinyModel(torch.nn.Module):
 	def __init__(self):
 		super(TinyModel, self).__init__()
-		self.linear1 = torch.nn.Linear(5,64)
+		self.linear1 = torch.nn.Linear(4,64)
 		self.activation = torch.nn.ReLU()
 		self.linear2 = torch.nn.Linear(64,1)
 		self.sigmoid = torch.nn.Sigmoid()

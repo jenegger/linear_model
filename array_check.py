@@ -4,9 +4,9 @@ def is_subarray(large_array, small_array):
 	rows_large, cols_large = large_array.shape
 	rows_small, cols_small = small_array.shape
 	energy_val = 0
-	ene_sum = np.sum(large_array,axis=0)[1]
-	#print("this is the sum energy:")
-	#print(ene_sum)
+	#ene_sum = np.sum(large_array,axis=0)[1]
+	ene_sum = np.sum(large_array,axis=0)[0]
+
 	if cols_large != cols_small:
 		return energy_val
 	if rows_large < rows_small:
@@ -16,7 +16,8 @@ def is_subarray(large_array, small_array):
 		for i in range(rows_large):
 			if (np.array_equal(small_array[j,:],large_array[i,:])):
 				some_true_element = True
-				energy_val += small_array[j,1]/ene_sum
+				#energy_val += small_array[j,1]/ene_sum
+				energy_val += small_array[j,0]/ene_sum
 		#if (some_true_element == False):
 		if (some_true_element  == False):
 			return 0

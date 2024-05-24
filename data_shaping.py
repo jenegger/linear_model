@@ -37,7 +37,7 @@ def create_data():
 	selected_hits = np.resize(selected_hits,(int(eventnumber),3))
 	data_list =  []
 	target_list = []
-	for hits in selected_hits[:100]:
+	for hits in selected_hits[:16]:
 	#for hits in selected_hits:
 		nr_subevent1 = int(hits[0])
 		nr_subevent2 = int(hits[1])
@@ -45,6 +45,9 @@ def create_data():
 		subevent1 = my_data[my_data[:,0] == nr_subevent1]
 		subevent2 = my_data[my_data[:,0] == nr_subevent2]
 		subevent3 = my_data[my_data[:,0] == nr_subevent3]
+		subevent1 = np.delete(subevent1,0,1)
+		subevent2 = np.delete(subevent2,0,1)
+		subevent3 = np.delete(subevent3,0,1)
 		list_of_subev = [subevent1,subevent2,subevent3]
 	
 		full_event = np.concatenate((subevent1,subevent2,subevent3),axis=0)
@@ -54,7 +57,8 @@ def create_data():
 		max_length_comb = 0;
 		for elem in all_combinations:
 			np_elem = np.array(elem)
-			np_elem = np.reshape(np_elem,(-1,5))
+			#np_elem = np.reshape(np_elem,(-1,5))
+			np_elem = np.reshape(np_elem,(-1,4))
 			if (np_elem.shape[0] > max_length_comb):
 				max_length_comb = np_elem.shape[0]
 			mask_val = 0
@@ -66,9 +70,11 @@ def create_data():
 		test= [np.array(sublist) for sublist in all_combinations]
 		for elem in test:
 			arr_elem = np.array(elem)
-			arr_elem = np.reshape(elem,(-1,5))
+			#arr_elem = np.reshape(elem,(-1,5))
+			arr_elem = np.reshape(elem,(-1,4))
 			
-		padded_arr  = [np.append(subarr,np.zeros(((max_length_comb - subarr.shape[0]),5)),axis=0) for subarr in test]
+		#padded_arr  = [np.append(subarr,np.zeros(((max_length_comb - subarr.shape[0]),5)),axis=0) for subarr in test]
+		padded_arr  = [np.append(subarr,np.zeros(((max_length_comb - subarr.shape[0]),4)),axis=0) for subarr in test]
 	
 		np_arr = np.asarray(padded_arr)
 		#permute rows in the subarrays
